@@ -49,8 +49,12 @@ public class MainActivity extends AppCompatActivity {
                         //Setting Recycler View
 
                         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                        CustomAdapter adapter = new CustomAdapter(mySongs);
+                        recyclerView.setAdapter(adapter);
+
+                        //Alternate way in ListView
 //                        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1,mySongs);
-//                        recyclerView.setAdapter(adapter);
+//                        listView.setAdapter(adapter);
 
 
 
