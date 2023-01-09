@@ -1,12 +1,16 @@
 package com.example.musicplayer;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -36,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
                     //If Permission granted
                     @Override
                     public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-                        Toast.makeText(MainActivity.this, "External Storage Permission Given", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MainActivity.this, "External Storage Permission Given", Toast.LENGTH_SHORT).show();
 
                         //Getting a List of Songs in the form of a String
 
@@ -52,10 +56,9 @@ public class MainActivity extends AppCompatActivity {
                         CustomAdapter adapter = new CustomAdapter(mySongs);
                         recyclerView.setAdapter(adapter);
 
-                        //Alternate way in ListView
+                                //Alternate way in ListView
 //                        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1,mySongs);
 //                        listView.setAdapter(adapter);
-
 
 
                     }
@@ -63,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     //If Permission is not granted
                     @Override
                     public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
-
+                        Toast.makeText(MainActivity.this, "This Permission is required to proceed further", Toast.LENGTH_SHORT).show();
                     }
 
                     //Permission not granted and App reopened
@@ -76,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Method that returns an ArrayList of Files whose name ends with .mp3 and does not start with a .
-    private ArrayList<File> getSongs(File file){
+    public static ArrayList<File> getSongs(File file){
         ArrayList<File> arrayList = new ArrayList<>();
         File listFiles[] = file.listFiles();
         if(listFiles!=null){

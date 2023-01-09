@@ -1,34 +1,48 @@
 package com.example.musicplayer;
 
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder> {
+public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder>  {
 
-    private String[] localDataSet;
+    private static String[] localDataSet;
 
     /**
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder)
      */
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private final TextView textView;
 
         public ViewHolder(View view) {
             super(view);
-            // Define click listener for the ViewHolder's View
-
+            view.setOnClickListener(this);
             textView = (TextView) view.findViewById(R.id.textView);
+            // Define click listener for the ViewHolder's View
+            //textView.setOnClickListener(this);
+
         }
 
         public TextView getTextView() {
             return textView;
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = this.getAdapterPosition();
+            String name = localDataSet[position];
+            Intent intent = new Intent(view.getContext(), PlaySong.class);
+            intent.putExtra("com.example.musicplayer.CustomAdapter.SongName",name);
+            view.getContext().startActivity(intent);
+            //Toast.makeText(view.getContext(), "Position is " + Integer.toString(pos), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -46,9 +60,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         // Create a new view, which defines the UI of the list item
-        View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.text_row_item, viewGroup, false);
-
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.text_row_item, viewGroup, false);
         return new ViewHolder(view);
     }
 
