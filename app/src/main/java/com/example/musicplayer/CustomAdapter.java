@@ -11,9 +11,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder>  {
 
-    private static String[] localDataSet;
+    public static ArrayList<File> localdataset;
 
     /**
      * Provide a reference to the type of views that you are using
@@ -27,7 +32,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             view.setOnClickListener(this);
             textView = (TextView) view.findViewById(R.id.textView);
             // Define click listener for the ViewHolder's View
-            //textView.setOnClickListener(this);
 
         }
 
@@ -38,11 +42,13 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         @Override
         public void onClick(View view) {
             int position = this.getAdapterPosition();
-            String name = localDataSet[position];
+            String name = localdataset.get(position).getName().replace(".mp3", "");
             Intent intent = new Intent(view.getContext(), PlaySong.class);
             intent.putExtra("com.example.musicplayer.CustomAdapter.SongName",name);
+            intent.putExtra("com.example.musicplayer.CustomAdapter.SongList", localdataset);
+            intent.putExtra("com.example.musicplayer.CustomAdapter.SongPosition", position);
             view.getContext().startActivity(intent);
-            //Toast.makeText(view.getContext(), "Position is " + Integer.toString(pos), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(view.getContext(), "Position is " + Integer.toString(position), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -52,8 +58,8 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
      * @param dataSet String[] containing the data to populate views to be used
      * by RecyclerView
      */
-    public CustomAdapter(String[] dataSet) {
-        localDataSet = dataSet;
+    public CustomAdapter(ArrayList<File> dataSet) {
+        localdataset = dataSet;
     }
 
     // Create new views (invoked by the layout manager)
@@ -71,13 +77,13 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.getTextView().setText(localDataSet[position]);
+        viewHolder.getTextView().setText(localdataset.get(position).getName());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return localDataSet.length;
+        return localdataset.size();
     }
 }
 

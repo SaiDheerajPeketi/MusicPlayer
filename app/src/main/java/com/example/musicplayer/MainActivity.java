@@ -24,14 +24,18 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
+    //public static HashMap<String,String> mp;
+    public static ArrayList<File> songs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerView);
 
         //Permission from User for External Storage Read Access using Dexter Library
         Dexter.withContext(this)
@@ -40,25 +44,18 @@ public class MainActivity extends AppCompatActivity {
                     //If Permission granted
                     @Override
                     public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
-                        //Toast.makeText(MainActivity.this, "External Storage Permission Given", Toast.LENGTH_SHORT).show();
 
                         //Getting a List of Songs in the form of a String
+                        songs = getSongs(Environment.getExternalStorageDirectory());
 
-                        ArrayList<File> Songs = getSongs(Environment.getExternalStorageDirectory());
-                        String[] mySongs = new String[Songs.size()];
-                        for(int i = 0;i<Songs.size();i++){
-                            mySongs[i] = Songs.get(i).getName().replace(".mp3", "");
-                        }
 
                         //Setting Recycler View
 
                         recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                        CustomAdapter adapter = new CustomAdapter(mySongs);
+                        CustomAdapter adapter = new CustomAdapter(songs);
                         recyclerView.setAdapter(adapter);
+                        //recyclerView.se
 
-                                //Alternate way in ListView
-//                        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1,mySongs);
-//                        listView.setAdapter(adapter);
 
 
                     }
@@ -80,20 +77,24 @@ public class MainActivity extends AppCompatActivity {
 
     //Method that returns an ArrayList of Files whose name ends with .mp3 and does not start with a .
     public static ArrayList<File> getSongs(File file){
-        ArrayList<File> arrayList = new ArrayList<>();
-        File listFiles[] = file.listFiles();
+        ArrayList<File> ans = new ArrayList<>();
+        File[] listFiles = file.listFiles();
         if(listFiles!=null){
             for(File curr:listFiles){
                 if(!curr.isHidden() && curr.isDirectory()){
-                    arrayList.addAll(getSongs(curr));
+                    ans.addAll(getSongs(curr));
                 }
                 else{
                     if(curr.getName().endsWith(".mp3") && !curr.getName().startsWith(".")){
-                        arrayList.add(curr);
+                        ans.add(curr);
                     }
                 }
             }
         }
-        return arrayList;
+        return ans;
     }
+
 }
+
+
+
