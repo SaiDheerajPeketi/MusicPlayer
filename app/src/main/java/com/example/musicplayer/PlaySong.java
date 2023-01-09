@@ -28,6 +28,7 @@ public class PlaySong extends AppCompatActivity {
     private SeekBar seekBar;
     private MediaPlayer mediaPlayer;
     private ArrayList<File> Songs;
+    private static boolean isPlaying = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +64,7 @@ public class PlaySong extends AppCompatActivity {
                 textView.setText(Songs.get(song_position[0]).getName());
                 mediaPlayer = MediaPlayer.create(PlaySong.this, uri);
                 mediaPlayer.start();
+                isPlaying = true;
                 seekBar.setProgress(0);
                 play_pause.setImageResource(R.drawable.ic_baseline_pause_24);
             }
@@ -73,10 +75,12 @@ public class PlaySong extends AppCompatActivity {
             public void onClick(View view) {
                 if(mediaPlayer.isPlaying()){
                     mediaPlayer.pause();
+                    isPlaying = false;
                     play_pause.setImageResource(R.drawable.ic_baseline_play_arrow_24);
                 }
                 else{
                     mediaPlayer.start();
+                    isPlaying = true;
                     play_pause.setImageResource(R.drawable.ic_baseline_pause_24);
                 }
             }
@@ -97,6 +101,7 @@ public class PlaySong extends AppCompatActivity {
                 textView.setText(Songs.get(song_position[0]).getName().replace(".mp3", ""));
                 mediaPlayer = MediaPlayer.create(PlaySong.this, uri);
                 mediaPlayer.start();
+                isPlaying = true;
                 seekBar.setProgress(0);
                 play_pause.setImageResource(R.drawable.ic_baseline_pause_24);
             }
@@ -107,18 +112,34 @@ public class PlaySong extends AppCompatActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if(b){
+                if(b && isPlaying){
                     mediaPlayer.seekTo(i);
+                }
+                else if(b && !mediaPlayer.isPlaying()) {
+                    mediaPlayer.seekTo(i);
+                    mediaPlayer.pause();
+                    isPlaying = false;
                 }
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                if(isPlaying) {
+                    mediaPlayer.pause();
+                    play_pause.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                }
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
+                if(isPlaying){
+                    mediaPlayer.start();
+                    play_pause.setImageResource(R.drawable.ic_baseline_pause_24);
+                }
+                else{
+                    mediaPlayer.pause();
+                    play_pause.setImageResource(R.drawable.ic_baseline_play_arrow_24);
+                }
 
             }
         });
@@ -127,6 +148,7 @@ public class PlaySong extends AppCompatActivity {
         Uri uri = Uri.parse(Songs.get(song_position[0]).toString());
         mediaPlayer = MediaPlayer.create(this, uri);
         mediaPlayer.start();
+        isPlaying =true;
         seekBar.setMax(mediaPlayer.getDuration());
 
         //SeekBar Updater
@@ -157,5 +179,6 @@ public class PlaySong extends AppCompatActivity {
         super.onDestroy();
         mediaPlayer.stop();
         mediaPlayer.release();
+        isPlaying = false;
     }
 }
