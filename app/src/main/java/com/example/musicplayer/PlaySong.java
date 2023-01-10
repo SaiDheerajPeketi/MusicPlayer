@@ -29,6 +29,7 @@ public class PlaySong extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private ArrayList<File> Songs;
     private static boolean isPlaying = false;
+    private Thread UpdateSeek;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +45,10 @@ public class PlaySong extends AppCompatActivity {
         play_pause = findViewById(R.id.play_pause);
         next = findViewById(R.id.next);
         seekBar = findViewById(R.id.seekBar);
-        Thread UpdateSeek;
 
+
+        //Added for Marquee
+        textView.setSelected(true);
         textView.setText(song_name);
 
         //On Click Listeners for Image Buttons
@@ -165,6 +168,7 @@ public class PlaySong extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+                //Thread.currentThread().interrupt();
             }
         };
 
@@ -180,5 +184,7 @@ public class PlaySong extends AppCompatActivity {
         mediaPlayer.stop();
         mediaPlayer.release();
         isPlaying = false;
+        UpdateSeek.interrupt();
+        UpdateSeek = null;
     }
 }
