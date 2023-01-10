@@ -1,8 +1,10 @@
 package com.example.musicplayer;
 
 import static com.example.musicplayer.MainActivity.getSongs;
+import static com.example.musicplayer.MainActivity.Songs;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -27,26 +29,27 @@ public class PlaySong extends AppCompatActivity {
     private ImageButton next;
     private SeekBar seekBar;
     private MediaPlayer mediaPlayer;
-    private ArrayList<File> Songs;
+    //private ArrayList<File> Songs;
     private static boolean isPlaying = false;
     private Thread UpdateSeek;
+    int[] song_position = new int[0];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_song);
         Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        Songs = (ArrayList) bundle.getParcelableArrayList("com.example.musicplayer.CustomAdapter.SongList");
+        //Bundle bundle = intent.getExtras();
+        //Songs = (ArrayList) bundle.getParcelableArrayList("com.example.musicplayer.CustomAdapter.SongList");
         String song_name = intent.getStringExtra("com.example.musicplayer.CustomAdapter.SongName");
-        final int[] song_position = {intent.getIntExtra("com.example.musicplayer.CustomAdapter.SongPosition", 0)};
+        song_position = new int[]{intent.getIntExtra("com.example.musicplayer.CustomAdapter.SongPosition", 0)};
         textView = findViewById(R.id.mp_song_text);
         previous = findViewById(R.id.previous);
         play_pause = findViewById(R.id.play_pause);
         next = findViewById(R.id.next);
         seekBar = findViewById(R.id.seekBar);
 
-
+       // File[] ext = ContextCompat.getExternalFilesDirs(PlaySong.this, )
         //Added for Marquee
         textView.setSelected(true);
         textView.setText(song_name);
@@ -66,7 +69,12 @@ public class PlaySong extends AppCompatActivity {
                 Uri uri = Uri.parse(Songs.get(song_position[0]).toString());
                 textView.setText(Songs.get(song_position[0]).getName());
                 mediaPlayer = MediaPlayer.create(PlaySong.this, uri);
-                mediaPlayer.start();
+                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mediaPlayer) {
+                        mediaPlayer.start();
+                    }
+                });
                 isPlaying = true;
                 seekBar.setProgress(0);
                 play_pause.setImageResource(R.drawable.ic_baseline_pause_24);
@@ -103,10 +111,18 @@ public class PlaySong extends AppCompatActivity {
                 Uri uri = Uri.parse(Songs.get(song_position[0]).toString());
                 textView.setText(Songs.get(song_position[0]).getName().replace(".mp3", ""));
                 mediaPlayer = MediaPlayer.create(PlaySong.this, uri);
-                mediaPlayer.start();
+                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mediaPlayer) {
+                        mediaPlayer.start();
+                    }
+                });
                 isPlaying = true;
                 seekBar.setProgress(0);
                 play_pause.setImageResource(R.drawable.ic_baseline_pause_24);
+//                synchronized (UpdateSeek){
+//                    UpdateSeek.notify();
+//                }
             }
         });
 
@@ -117,9 +133,11 @@ public class PlaySong extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 if(b && isPlaying){
                     mediaPlayer.seekTo(i);
+                    //seekBar.setProgress(i);
                 }
                 else if(b && !mediaPlayer.isPlaying()) {
                     mediaPlayer.seekTo(i);
+                    //seekBar.setProgress(i);
                     mediaPlayer.pause();
                     isPlaying = false;
                 }
@@ -150,7 +168,12 @@ public class PlaySong extends AppCompatActivity {
         //Starts Playing as soon as a song is clicked
         Uri uri = Uri.parse(Songs.get(song_position[0]).toString());
         mediaPlayer = MediaPlayer.create(this, uri);
-        mediaPlayer.start();
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.start();
+            }
+        });
         isPlaying =true;
         seekBar.setMax(mediaPlayer.getDuration());
 
@@ -159,16 +182,45 @@ public class PlaySong extends AppCompatActivity {
             @Override
             public void run() {
                 int CurrentPosition = 0;
-                while (CurrentPosition < mediaPlayer.getDuration()) {
-                    CurrentPosition = mediaPlayer.getCurrentPosition();
-                    seekBar.setProgress(CurrentPosition);
+                try{
+                while (mediaPlayer!=null && CurrentPosition < mediaPlayer.getDuration()) {
                     try {
+                        if (mediaPlayer != null & mediaPlayer.isPlaying())
+                            CurrentPosition = mediaPlayer.getCurrentPosition();
+                        if (seekBar != null)
+                            seekBar.setProgress(CurrentPosition);
                         Thread.sleep(1000);
-                    } catch (InterruptedException e) {
+                    }
+                    catch (NullPointerException e){
+                        e.printStackTrace();
+                    }
+                    catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    catch (IllegalStateException e) {
+                        e.printStackTrace();
+                    }
+                    catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                //Thread.currentThread().interrupt();
+
+//                    try {
+//                        synchronized (this) {
+//                            this.wait();
+//                        }
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+
+                }
+                catch(IllegalStateException e){
+                    e.printStackTrace();
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+
             }
         };
 
@@ -176,15 +228,37 @@ public class PlaySong extends AppCompatActivity {
 
 
     }
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        Intent backToMain = new Intent(PlaySong.this, MainActivity.class);
+//        backToMain.putExtra("com.example.musicplayer.PlaySong.SongPosition", song_position[0]);
+//        startActivity(backToMain);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        Intent backToMain = getIntent();
+//        int song_position = backToMain.getIntExtra("com.example.musicplayer.PlaySong.SongPosition", 0);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mediaPlayer.stop();
-        mediaPlayer.release();
         isPlaying = false;
         UpdateSeek.interrupt();
         UpdateSeek = null;
+        mediaPlayer.stop();
+        mediaPlayer.reset();
+        mediaPlayer.release();
+        mediaPlayer = null;
     }
+
 }
