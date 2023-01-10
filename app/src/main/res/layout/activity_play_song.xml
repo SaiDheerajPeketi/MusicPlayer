@@ -10,28 +10,33 @@
         android:id="@+id/mp_song_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:hint="@string/song_name"
-        android:singleLine="true"
+        android:layout_marginTop="40dp"
+        android:clickable="true"
         android:ellipsize="marquee"
+        android:focusableInTouchMode="true"
+        android:hint="@string/song_name"
         android:marqueeRepeatLimit="marquee_forever"
+        android:minHeight="48dp"
         android:scrollHorizontally="true"
+        android:singleLine="true"
         android:textColorHint="#757575"
-        android:textSize="20sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:focusable="true" />
 
     <SeekBar
         android:id="@+id/seekBar"
         android:layout_width="375dp"
         android:layout_height="27dp"
-        android:layout_marginTop="300dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mp_song_text" />
+        app:layout_constraintTop_toBottomOf="@+id/album_cover_image"
+        app:layout_constraintVertical_bias="0.5" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -75,5 +80,16 @@
             app:srcCompat="@drawable/ic_baseline_skip_next_24" />
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/album_cover_image"
+        android:layout_width="339dp"
+        android:layout_height="346dp"
+        app:layout_constraintBottom_toTopOf="@+id/seekBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mp_song_text"
+        app:layout_constraintVertical_bias="0.5"
+        app:srcCompat="@drawable/music" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -77,7 +77,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
 
         // Get element from your dataset at this position and replace the
         // contents of the view with that element
-        viewHolder.getTextView().setText(localdataset.get(position).getName());
+        viewHolder.getTextView().setText(localdataset.get(position).getName().replace(".mp3", ""));
     }
 
     // Return the size of your dataset (invoked by the layout manager)
